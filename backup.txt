@@ -1,0 +1,97 @@
+import tornado.web
+import tornado.ioloop
+
+#another part
+import json
+
+
+class YourHandler(tornado.web.RequestHandler):
+    async def get(self):
+        try:
+            # Example of querying MongoDB
+            cursor = self.application.db.your_collection.find({})
+            async for document in cursor:
+                self.write(document)
+        except Exception as e:
+            self.set_status(500)
+            self.write({"error": str(e)})
+
+
+class basicRequestHandler(tornado.web.RequestHandler):
+    def get(self):#method
+        self.write("hello world from python backend")
+class CORSOptionsHandler(tornado.web.RequestHandler):
+    def options(self):
+        # Set CORS headers to allow requests from any origin
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        self.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+        self.set_status(204)  # No content
+  
+class queryRenderHandler(tornado.web.RequestHandler):
+     
+
+     def get(self):#method
+        attribute_ko_name = self.get_argument("num")
+        if(attribute_ko_name.isdigit()):
+             #ternary operator using the if and else.
+             #attribute_ko_name%2==0?"odd":"even"
+             varlocal = "odd" if int(attribute_ko_name) %2 else "Even"
+             #it is the response back to the client
+             self.write(f"{attribute_ko_name} is {varlocal}")
+        else:
+            self.write(f"{attribute_ko_name} is not valid integer")
+
+#below process includes destructuring the parameter not argument(eg: parameter/?key=value)
+#parameter doesnot contain ? symbol it is the arrangement of parameter and subparameters.
+#we are not retriving the data from get_argument from the parameter.
+#instead we are using the regex to match and map the parameter directly to the method function.
+class resourceHandler(tornado.web.RequestHandler):
+    def get(self, studentName,courseId):#method
+        
+        self.write("welcome {}, The course id is {}".format(studentName, courseId))
+
+    #url: localhost :8882 and, self: key 
+    #self is the parameter after the url
+
+
+class jsongetHandler(tornado.web.RequestHandler):
+#header setting
+    def set_default_headers(self):
+        # Allow requests from all origins
+        self.set_header("Access-Control-Allow-Origin", "*")
+        # Allow GET requests with the Content-Type header
+        self.set_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        self.set_header("Access-Control-Allow-Headers", "Content-Type")
+
+#parameter setting
+    def get(self):#method
+        fh= open("list.txt","r")
+        fruits = fh.read().splitlines()
+        fh.close()
+        self.write(json.dumps(fruits))
+
+    def post(self):#method   
+        fruitname = self.get_argument("fruit")#url/?fruit
+        fh= open("list.txt","a")
+        fh.write(f"{fruitname}\n")
+        fh.close()
+        self.write(json.dumps({"message":"fruit added successfully"}))
+
+
+
+
+if __name__ == "__main__":
+    app = tornado.web.Application([
+        (r"/", basicRequestHandler),
+        (r"/isEven", queryRenderHandler),
+        #key is the (a-z) is the parameter and (0-9) is the value that the parameter must contains
+        (r"/students/([a-z]+)/([0-9]+)", resourceHandler),
+        
+        (r"/fruitslist", jsongetHandler),#did it with accessing file.txt,
+    ])
+
+    port = 8882
+    app.listen(port)
+    print("listening in {}".format(port))
+    tornado.ioloop.IOLoop.current().start()

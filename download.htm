@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>localboundaries</title>
+  <meta name="description"
+    content="Gaupalika, Nagarpalika, Mahanagarpalika, Upamahanagarpalika, Nepal District, Nepal Provinces, GeoJSON, GIS Data, TopoJSON, Leaflet Nepal, Local level, GIS Data, Nepal GIS Data">
+  <link rel="icon" href="css/images/favicon.ico">
+  <link rel="stylesheet" href=" /css/main.css">
+
+  <link rel="canonical" href="http://username.github.io/">
+  <link rel="alternate" type="application/rss+xml" title="localboundaries" href="http://username.github.io /feed.xml" />
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link href='//fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
+  <script src="js/d3.v3.min.js"></script>
+  <script src="js/topojson.v1.min.js"></script>
+  <link rel="stylesheet" href="css/leaflet.css" />
+  <script src="js/leaflet.js"></script>
+</head>
+  <body>
+    <div class="site-header">
+
+    <h1> Local Boundaries</h1>
+</div>
+<div id="map"></div>
+
+<div class="download-container">
+    <ul>
+        <li>
+            <a href="" class="buttonDownload">TopoJSON </a>
+            <ul>
+                <li>
+                    <a href="./css/province.topojson" download>Provinces</a>
+                </li>
+                <li><a href="./css/district.topojson" download>Districts</a></li>
+                <li><a href="./css/municipality.topojson" download>Local Levels</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="buttonDownload" download>GeoJSON </a>
+            <ul>
+                <li>
+                    <a href="./js/province.geojson" download>Provinces</a>
+                </li>
+                <li><a href="./js/district.geojson" download>Districts</a></li>
+                <li><a href="./js/municipality.geojson">Local
+                        Levels</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="home">
+  <div class="page-content">
+
+    <p> In 2007, <a href="https://en.wikipedia.org/wiki/Federalism_in_Nepal">Nepal officially became a Federal
+        Democratic Republic country</a> with its new constitution,Nepal also announced the new federal structures
+      consisting of 7 provinces with 753 local levels categorized as rural
+      municipality, municipality, metropolitan and sub-metropolitan.
+    </p>
+    <p>
+      <b>Local Boundaries</b> brings the detailed geodata of administrative units or maps of all administrative
+      boundaries defined by the Government
+      of Nepal, in an open and reusable format. The local boundaries are available in two formats (TopoJSON and GeoJSON)
+      and
+      can be easily reused to map local levels data to OpenStreetMap, Google Map, Leaflet or MapBox interactively.
+    </p>
+    <h2>Why Local Boundaries</h2>
+    <ul>
+      <li> Local Boundaries allow anyone to quickly map local authority data to OpenStreetMap, Google Map, Leaflet or
+        MapBox interactively.</li>
+      <li> It lets developers create and visualize the local levels data in a map of Nepal for comparison and others
+        stuffs.</li>
+      <li> It can be useful for planning, analysis, monitoring and making decision by integrating with different
+        software tools and libraries. </li>
+      <li> It lets you visualize on a map where the lines being drawn, right down to the level of individual properties.
+      </li>
+    </ul>
+    <h3>Levels and types of local boundaries included</h3>
+    <ol>
+
+      <li> Provinces Level (7 Provinces) </li>
+      <li>Districts Level (77 Districts) </li>
+      <li>Local Levels (753 Local Levels) </li>
+      <b>Local Levels Includes:</b>
+      <ul>
+        <li>Rural Municipality (Gaupalika) </li>
+        <li> Municipality (Nagarpalika) </li>
+        <li> Metropolitan (Mahanagarpalika) </li>
+        <li> Sub-Metropolitan (Upamahanagarpalika) </li>
+        <li>National Parks </li>
+        <li>Wildlife Reserves </li>
+        <li>Hunting Reserves </li>
+      </ul>
+    </ol>
+    <h2>License</h2>
+    <p>
+      The datasets are licensed under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons
+        Attribution 4.0 International (CC BY 4.0)</a>.
+    </p>
+  </div>
+</div>
+      </div>
+    </div>
+    <script type="text/javascript" src='../js/jquery.min.js'></script>
+<script>
+    var map = L.map('map').setView([28.1999999, 84.100140], 7);
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+        maxZoom: 8, minZoom: 6,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'mapbox.light'
+    }).addTo(map);
+
+    locallevel = L.geoJson(null, {
+        style: function (feature) {
+            return feature.properties && feature.properties.style;
+        },
+
+        onEachFeature: handleLayer,
+
+    }).addTo(map)
+
+
+    district = L.geoJson(null, {
+        style: function (feature) {
+            return {
+                weight: 2,
+                color: 'black',
+                fillColor: 'none'
+            }
+        },
+    })
+
+    province = L.geoJson(null, {
+        style: function (feature) {
+            return {
+                weight: 2,
+                color: 'red',
+                fillColor: 'none'
+            }
+        },
+
+    })
+
+
+    d3.json('./css/municipality.topojson', function (error, data) {
+        var neighborhoods = topojson.feature(data, data.objects.collection)
+        locallevel.addData(neighborhoods);
+    })
+
+    d3.json('./css/district.topojson', function (error, data) {
+        var neighborhoods = topojson.feature(data, data.objects.collection)
+        district.addData(neighborhoods);
+    })
+
+    d3.json('./css/province.topojson', function (error, data) {
+        var neighborhoods = topojson.feature(data, data.objects.collection)
+        province.addData(neighborhoods);
+    })
+
+
+    var districtLayer = {
+        "District": district,
+    };
+
+    var provinceLayer = {
+        "Province": province,
+    };
+
+    L.control.layers(districtLayer, provinceLayer).addTo(map);
+
+
+    function handleLayer(feature, layer) {
+        layer.bindLabel(
+            'State Code :' + feature.properties.STATE_CODE + '<br>' +
+            'Municipality Name : ' + feature.properties.GaPa_NaPa + '<br>' +
+            'Municipality Level : ' + feature.properties.Type_GN + '<br>' +
+            'District : ' + feature.properties.DISTRICT + '<br>', { noHide: true })
+
+        layer.setStyle({
+            fillColor: '#D5E3FF',
+            fillOpacity: 1,
+            color: '#555',
+            weight: 1,
+            opacity: 0.5
+        });
+
+        layer.on({
+            mouseover: enterLayer,
+            mouseout: leaveLayer
+        });
+        layer.on('click', function (e) {
+            alert(layer.feature.properties.GaPa_NaPa)
+        });
+    }
+
+    function enterLayer() {
+        this.bringToFront();
+        this.setStyle({
+            weight: 2,
+            opacity: 1
+        });
+    }
+
+    function leaveLayer() {
+        this.bringToBack();
+        this.setStyle({
+            weight: 1,
+            opacity: .5
+        });
+    }
+
+    $('.leaflet-control-layers-selector').attr('type', 'checkbox');
+
+</script>
+<div class="footer" align="center">
+    Made by <a href=http://oknp.org target="_blank">Open Knowledge Nepal</a> - “Liberating Knowledge for
+    Opportunity”</br>
+    Template by <a href=http://diezcami.github.io target="_blank">Camille Diez</a>, Powered by <a
+        href=http://jekyllrb.com target="_blank">Jekyll</a>
+</div>
+  </body>
+</html>

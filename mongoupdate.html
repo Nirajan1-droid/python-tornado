@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Viewer</title>
+</head>
+<body>
+    <th>update garne arko page</th>
+    <table id="documentTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody id="tablekobody">
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+<button id="getalldatas" onclick="linefunction()">get garne button from db</button>
+<input type="text" name="name">
+<input type="text" name="age">
+<button type="button" onclick="update()"></button>
+
+<script>
+    function linefunction(){
+        let selecttablekobody = document.getElementById("tablekobody")
+        try{
+            fetch("http://localhost:8882/create").then(response=>response.json()).then(alldata=>{
+                alldata.forEach(euta_euta => {
+                    let id = euta_euta.id;
+                    let nam = euta_euta.name;
+                    let katibarsa = euta_euta.age;
+
+                    let trnew = document.createElement('tr');
+
+                    let tdnew1 = document.createElement('td');
+                    tdnew1.textContent = id;
+                    let tdnew2 = document.createElement('td');
+                    tdnew2.textContent = nam;
+                    let tdnew3 = document.createElement('td');
+                    tdnew3.textContent = katibarsa;
+
+                    // Create a button and set its attributes
+                    let tdbutton = document.createElement('button')
+                    tdbutton.textContent = "Update"
+                    tdbutton.setAttribute("class", `updateBtn`)
+                    tdbutton.setAttribute("data-id", `${id}`)
+                    // Add event listener to the button
+                    tdbutton.addEventListener('click', function() {
+                            var id = this.getAttribute('data-id');
+                            window.location.href = `http://localhost:8882/create/${id}`;
+                        });
+
+                    trnew.appendChild(tdnew1)
+                    trnew.appendChild(tdnew2)
+                    trnew.appendChild(tdnew3)
+                    //button
+                    trnew.appendChild(tdbutton)
+
+
+
+                    selecttablekobody.appendChild(trnew)
+
+                });
+            })
+        }catch(errorvanne){
+            alert('error yoayo',errorvanne);
+        }
+    }
+ 
+</script>
+</body>
+</html>

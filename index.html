@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+     
+</head>
+<body>
+    <label for="listSelect">Add Fruit</label>
+    <select id='listSelect'> 
+        <!-- <option>somethind</opion> -->
+    </select>
+    <input type="text" name="fruit_box" id="fruit_box"/>
+    <button id="btnAdd">List</button>
+
+    <script>
+        const fruit_select = document.getElementById("listSelect");
+         let datalist ;
+        // fruit_select.addEventListener("click",event=>{
+            //get the data from the fruitslist (json format ma auxa data {"banana","apple"})
+            fetch("http://localhost:8882/fruitslist")
+                          .then(response => response.json())
+                          .then(jsResponse => {
+                            jsResponse.forEach(each_fruit => {
+                              let o = document.createElement("option");
+                              o.innerText = each_fruit; // Using innerText instead of innerHTML for security reasons
+                              fruit_select.appendChild(o);
+                              datalist = each_fruit;
+                            });
+                          }).catch(error => {
+                                alert('Error:', error);
+                              })
+
+  
+ 
+                              console.log(datalist);
+    // })
+// aba post kasari garne
+
+//steps:
+// button click garda function call hunuparyo. tyo function ma sabai steps hunuparyo:
+// button = document.getElementById("buttonId")
+//                              A. button.addEventListner("click", event=>{
+//                                                              sabai steps haru
+//                                                          }) 
+
+
+//1. suruma fruit_box(name) bata value line
+//2.fetch chalaune post request ma. 
+//               a. if post request has argument: url/parameter?argument={local_variable}
+//                         A. local_variable = value (of fruit_box) 
+//                if post request has dynamic parameter: url/parameter/{local_parameter}
+//                         A. local_parameter = value (of fruit_box) 
+
+
+//3.josn ma convert garne request lai.
+//      eg:                 .then((json_ma_convert)=>{
+//                               json_ma_convert.json()
+                        //    })
+
+//4.backend ko reponse dekhaune frontend ma:
+//          A.                eg:def post(self):#method   
+//                                   self.write(json.dumps({"message":"fruit added successfully"})) 
+                                                            //  message is key and "fruits .. " is value ##samjinu parne kura 
+//          finally: eg: .then((response_dekhaune)=>alert(response_dekhaune.message))
+document.addEventListener("DOMContentLoaded", function() {
+        let local_varss = document.getElementById('fruit_box');
+        const button_select = document.getElementById("btnAdd");
+        button_select.addEventListener("click", event => {
+        const fruitValue = local_varss.value;
+        alert(fruitValue);
+    
+          
+          fetch(`http://localhost:8882/fruitslist?fruit=${fruitValue}`,{"method":"POST"})//get the data from the fruitslist (json format ma auxa data {"banana","apple"})
+          .then((response)=>{
+            // console.log("get garda ayeko direct data",response);
+            response.json()
+            // console.log("json object ko format", response.json())
+          }).then((jsResponse)=>{
+            jsResponse.forEach(each_fruit => {
+              let o = document.createElement("option")//euta euta element lai option elmeent ma set gareko xau : eg: <option>
+                o.textContent = each_fruit//<option>banana</option>
+                fruit_select.appendChild(o)//select element ma option element lai jodeko xau.<select> <option>banana</option> </select>
+              });
+            })
+          });
+        });
+    </script>
+
+    
+</body>
+</html>
